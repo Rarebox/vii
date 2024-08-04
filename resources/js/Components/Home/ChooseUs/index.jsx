@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import chooseImg from "@/Assets/Home/chooseUs.png";
 import styles from "./style.module.css";
-import { FaFacebook, FaLinkedin } from "react-icons/fa";
-import { FaXTwitter, FaLink } from "react-icons/fa6";
-import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { IoSearchOutline, IoClose } from "react-icons/io5";
-import { CiSearch } from "react-icons/ci";
+
+import { FaPlus, FaMinus } from "react-icons/fa";
 
 const questions = [
     {
@@ -48,7 +45,8 @@ Dies ermöglicht eine schnellere Reaktion auf akute Fragen oder Probleme.`,
 
 
 Gerade in Zeiten von Pandemien oder ansteckenden Krankheiten minimiert die Videoberatung das Infektionsrisiko, da kein physischer Kontakt stattfindet.,
-`, `5. Diskretion und Privatsphäre:
+`,
+            `5. Diskretion und Privatsphäre:
 
 
 Videoberatung kann diskreter sein, da keine zusätzlichen Personen das Haus betreten müssen und Nachbarn oder Besucher nicht mitbekommen, dass eine Beratung stattfindet.`,
@@ -81,22 +79,26 @@ Videoberatung bietet zahlreiche Vorteile in Bezug auf Flexibilität, Komfort, Si
         id: 7,
         question:
             "Wie oft muss die Pflegeberatung in Anspruch genommen werden?",
-        answer: [`Die Häufigkeit der Beratung hängt vom Pflegegrad ab:`,
+        answer: [
+            `Die Häufigkeit der Beratung hängt vom Pflegegrad ab:`,
 
-`Pflegegrad 2 und 3: einmal alle sechs Monate`,
+            `Pflegegrad 2 und 3: einmal alle sechs Monate`,
 
-`Pflegegrad 4 und 5: einmal alle drei Monate`]
+            `Pflegegrad 4 und 5: einmal alle drei Monate`,
+        ],
     },
     {
         id: 8,
         question: "Was sind die Inhalte der Pflegeberatung?",
-        answer: [`Überprüfung der Pflegesituation und Qualität der häuslichen Pflege`,
+        answer: [
+            `Überprüfung der Pflegesituation und Qualität der häuslichen Pflege`,
 
-`Beratung zu pflegerischen Techniken und Hilfsmitteln`,
+            `Beratung zu pflegerischen Techniken und Hilfsmitteln`,
 
-`Information über weitere Unterstützungsangebote und Entlastungsmöglichkeiten`,
+            `Information über weitere Unterstützungsangebote und Entlastungsmöglichkeiten`,
 
-`Tipps zur Verbesserung der Pflegesituation`],
+            `Tipps zur Verbesserung der Pflegesituation`,
+        ],
     },
     {
         id: 9,
@@ -106,17 +108,17 @@ Videoberatung bietet zahlreiche Vorteile in Bezug auf Flexibilität, Komfort, Si
     {
         id: 10,
         question: "Welche Vorteile bietet die Pflegeberatung?",
-        answer: [`Die Pflegeberatung bietet mehrere Vorteile:`,
-`
+        answer: [
+            `Die Pflegeberatung bietet mehrere Vorteile:`,
+            `
 Sicherstellung einer hohen Pflegequalität`,
 
-`Unterstützung und Entlastung der pflegenden Angehörigen`,
+            `Unterstützung und Entlastung der pflegenden Angehörigen`,
 
-`Information über zusätzliche Hilfs- und Entlastungsangebote`,
+            `Information über zusätzliche Hilfs- und Entlastungsangebote`,
 
-`Vermeidung von Pflegefehlern und gesundheitlichen Risiken für den Pflegebedürftigen`
-        ]
-,
+            `Vermeidung von Pflegefehlern und gesundheitlichen Risiken für den Pflegebedürftigen`,
+        ],
     },
     {
         id: 11,
@@ -153,91 +155,96 @@ const ChooseUs = () => {
         setSearchTerm("");
         setShowSearch(false);
     };
-
     return (
         <div className="mx-auto my-36 flex flex-col items-center justify-center w-full max-w-3xl ">
             {!showSearch && (
-                <div className="flex w-full justify-between relative  items-center mb-5  md:px-0 px-6  ">
-                    <h2 className= {`${styles.title} flex items-center justify-center mx-auto text-5xl font-semibold leading-[52px] text-[#c7982e]`}>
+                <div className="flex w-full justify-between relative items-center mb-12 md:px-0 px-6">
+                    <h2
+                        className={`${styles.title} flex items-center justify-center mx-auto text-5xl font-semibold leading-[52px] text-[#c7982e]`}
+                    >
                         Weitere Infos | FAQ
                     </h2>
                     <IoSearchOutline
                         onClick={toggleSearch}
-                        className=" flex items-end text-[#c7982e] cursor-pointer w-5 h-5  hover:opacity-60"
+                        className="flex items-end text-[#c7982e] cursor-pointer w-5 h-5 hover:opacity-60"
                     />
                 </div>
             )}
             {showSearch && (
-                <div className="flex  items-center w-full relative ">
-                    <IoSearchOutline className="flex items-center absolute left-2 text-[#c7982e]   " />
-                    <input
-                        type="text"
-                        placeholder="Suche..."
-                        onChange={handleSearchChange}
-                        className="w-full px-8 h-12 text-sm text-[#c7982e] placeholder-[#c7982e] bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7982e] focus:border-transparent "
-                    />
-                    <IoClose
-                        className="absolute flex items-center right-2 text-[#c7982e] cursor-pointer"
-                        onClick={handleClearSearch}
-                    />
+                <div className="w-full relative mb-12 md:px-0 px-6">
+                    <div className="relative flex items-center w-full">
+                        <IoSearchOutline className="absolute left-4 text-[#c7982e]" />
+                        <input
+                            type="text"
+                            placeholder="Suche..."
+                            onChange={handleSearchChange}
+                            className="w-full pl-12 pr-8 h-12 text-sm text-[#c7982e] placeholder-[#c7982e] bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7982e] focus:border-transparent"
+                        />
+                        <IoClose
+                            className="absolute right-4 text-[#c7982e] cursor-pointer"
+                            onClick={handleClearSearch}
+                        />
+                    </div>
                 </div>
             )}
 
             {filteredQuestions.map((item) => (
                 <div
                     key={item.id}
-                    className=" flex flex-col justify-center w-full max-w-[800px] pt-3 md:px-0 px-6"
+                    className="flex flex-col justify-center w-full max-w-[800px] pt-3 md:px-0 px-6"
                 >
                     <button
-                        className={`flex items-center justify-between py-8 text-left w-full transition duration-1000 ease-in-out ${
+                        className={`flex items-center justify-between px-4 py-4 text-left w-full transition duration-1000 ease-in-out border-2 border-[#c7982e]  rounded-lg shadow-md ${
                             activeQuestion === item.id
-                                ? " border-none  "
-                                : "border-b-[1px]  border-[#c7982e] "
+                                ? "border-2"
+                                : "border-b-2 border-[#c7982e]"
                         }`}
                         onClick={() => toggleText(item.id)}
                     >
                         <div className="flex items-center">
-                            <h3 className="text-2xl text-[#c7982e] leading-normal ">
+                            <h3 className="text-2xl text-[#c7982e] leading-normal">
                                 {item.question}
                             </h3>
                         </div>
-                        <span>
+                        <span
+                            className={`${
+                                activeQuestion === item.id
+                                    ? styles.rotateIn
+                                    : styles.rotateOut
+                            }`}
+                        >
                             {activeQuestion === item.id ? (
-                                <div>
-                                    <IoIosArrowDown className="size-4 items-center flex justify-center text-[#c7982e] " />
-                                </div>
+                                <FaMinus className=" text-[#c7982e]" />
                             ) : (
-                                <div>
-                                    <IoIosArrowUp className="size-4 items-center flex justify-center text-[#c7982e]" />
-                                </div>
+                                <FaPlus className=" text-[#c7982e]" />
                             )}
                         </span>
                     </button>
                     {activeQuestion === item.id && (
-                        <div>
-                            <div className="mt-2">
+                        <div className="py-5 px-3">
                             {Array.isArray(item.answer) ? (
-                                <ul className={styles.answerList}>
+                                <ul className=" space-y-2">
                                     {item.answer.map((answerItem, index) => (
-                                        <li key={index} className={styles.answerListItem}>
+                                        <li
+                                            key={index}
+                                            className="text-lg text-gray-700"
+                                        >
                                             {answerItem}
                                         </li>
                                     ))}
                                 </ul>
-                             ) : (
-                                <span>{item.answer}</span>
+                            ) : (
+                                <div className=" space-y-2">
+                                    <span  className="text-lg text-gray-700">{item.answer}</span>
+                                </div>
                             )}
-                            </div>
-                            <div className="flex gap-2 mt-4 text-[#c7982e] cursor-pointer transition duration-300 ease-in-out ">
-                                <FaFacebook className="hover:opacity-55" />
-                                <FaXTwitter className="hover:opacity-55" />
-                                <FaLinkedin className="hover:opacity-55" />
-                                <FaLink className="hover:opacity-55" />
-                            </div>
                         </div>
                     )}
                 </div>
             ))}
+
+
+
         </div>
     );
 };

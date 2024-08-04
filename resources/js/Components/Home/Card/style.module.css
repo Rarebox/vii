@@ -1,6 +1,4 @@
-* {
-  font-family: "Segoe UI Light";
-}
+
 
 .card {
   background-color: #ffffff;
@@ -49,4 +47,22 @@
   line-height: 18px;
   word-wrap: break-word;
   text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .card-img {
+      transform: translateX(100%);
+  }
+
+  .card-img-reverse {
+      transform: translateX(-100%);
+  }
+
+  .card-img-loaded {
+      transform: translateX(0);
+  }
+
+  .transition {
+      transition: transform 2s ease-in-out;
+  }
 }

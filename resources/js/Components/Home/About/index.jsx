@@ -2,9 +2,11 @@ import React from "react";
 import Card from "../Card";
 
 import styles from "./style.module.css";
-import about1 from "@/Assets/Home/about/about-1.png";
-import about2 from "@/Assets/Home/about/about-2.png";
-import about3 from "@/Assets/Home/about/about-3.png";
+import about1 from "@/Assets/Home/about/about1.png";
+import about2 from "@/Assets/Home/about/about2.png";
+import about3 from "@/Assets/Home/about/about3.png";
+import about from "@/Assets/Home/about/about-img.png";
+
 
 import { useState, useRef, useEffect } from "react";
 
@@ -14,7 +16,7 @@ const cardsData = [
     {
         id: 1,
         title: "Beratungsbesuch § 37 Abs. 3 SGB XI",
-        img: "https://static.wixstatic.com/media/2376f7_6fc96252b287467e81fa1c5924a7eee9~mv2.jpg/v1/fill/w_490,h_330,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/Beratung4_edit2_web.jpg",
+        img: about1,
         text: 
             "Sie erhalten Pflegegeld und benötigen einen Beratungsbesuch? Dann buchen Sie einfach einen Termin bei unseren freundlichen Experten! Die Termine sind abhängig vom Pflegegrad unterschiedlich häufig in Anspruch zu nehmen, um das Pflegegeld zu sichern."
         ,
@@ -25,7 +27,7 @@ const cardsData = [
     {
         id: 2,
         title: "Sie haben die Wahl: Vor Ort!",
-        img: "https://static.wixstatic.com/media/2376f7_7a09e64f1cf34ce281439361690f9ca2~mv2.jpg/v1/fill/w_490,h_330,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/Beratung3_edit_web.jpg",
+        img: about2,
         text: 
             "Bei den Vitalisten wählen Sie ganz bequem aus: Wir bieten Hausbesuche zur Pflegeberatung nach § 37 Abs. 3 SGB XI in Gelsenkirchen und Umgebung (Bochum, Dortmund, Essen, Hagen, Herne) an.​"
         ,
@@ -36,7 +38,7 @@ const cardsData = [
     {
         id: 3,
         title: ` NEU:  Videoberatung deutschlandweit`,
-        img: "https://static.wixstatic.com/media/2376f7_8c727ecbdeda42598c0ec185ea16c038~mv2.jpg/v1/fill/w_490,h_330,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/Beratung_6_edit_web.jpg",
+        img: about3,
         text: 
             "Deutschlandweit bieten wir im Rahmen des Modellprojektes Telepflege des GKV-Spitzenverbandes super bequem Beratungsbesuche als Videokonferenz an. Dazu brauchen Sie nur ein Smartphone oder einen Laptop mit Internetanschluss. Sie haben nicht viel Zeit für den Besuch, oder Ihre Angehörigen wollen sich von einem anderen Ort aus dazuschalten? Dann ist die Videoberatung die perfekte Lösung!"
         ,
@@ -114,7 +116,7 @@ const About = () => {
                     <span className="text-[#c7982e] ml-2">VIP Vitalisten?</span>
                 </h1>
                 <img
-                    src="https://s3-alpha-sig.figma.com/img/ab1e/7e9a/e09bd4f9219f80d93d3f72c353a3cb15?Expires=1720396800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=PFXwZllKj0dYZaq1Lv40jHifKTJaeYGdoQKijnniT-OAJp1SmiMv~UZY6DfxhVWFwG4KIMDUNCY8eYqxUh2NAYOBuCC3CHwoyD~w~YBmTTZwdGAYFvMSNIHxKTAFn-IiPZ5AOmOziF~WFx0NwPKzPePTosO2jO2-eUYHl4t5hUG7XZZIXCYGtNsZoZSzDwWOEfEsgiXEH4pY1tMW2-AZzJcgRPgFMnfM-x6HoTar-u~2TC2q~wZHHpdfTyVQ7FzXOP7v0kCGs3tsGtIfA~sN7WIX1WJvY850WYdKPyb~x~ovo2MwTg5JST8Q29Po1HJo1Nrv4fusnAS5wtg1293Qbg__"
+                    src={about}
                     alt=""
                     className="max-w-full  w-[1217px] h-[462px] object-cover  rounded-xl mt-12 md:mt-16"
                 />

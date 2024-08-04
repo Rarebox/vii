@@ -5,11 +5,19 @@ import { Link } from "@inertiajs/react";
 import Stepper from "../Stepper";
 import { TbBuildingBank } from "react-icons/tb";
 import { IoVideocamOutline } from "react-icons/io5";
+import bannerImage from "../../../Assets/Home/banner/banner-image.jpeg"
 
 
 const Banner = (employees) => {
     return (
-        <div className="   bg-[url('https://s3-alpha-sig.figma.com/img/4476/f375/3f8827b3f4cfb65b97adb9c22ac05c73?Expires=1720396800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=oKYWg60xsKogCvU8J7ypZLWTC6aKqgVH5Qi0Up3ZpqEVOHfegaUW2jDG0jikSX~Vj~DVo-B1NVhDTdqHTqovgiPHRSHymlPdEiU6Fo7T1LAfpp8W6XDwLwIh~m-GvLYxxM60IaBfoRyj-q0LWGBLhfOuGZyWtNglUshxjfnCqoXFZ5CNDYaHlTi3ukXnAw~6peFDAUkowyYUQyiVXy060Z7wh~trqVOGp6xqDdeh4M~EX2q1iQvkIaAdRTNBwMn3KiEMizznAnhx6JWIA-A5DkF6IsQM~9fwz7W2oV9MKpSd891xixhoCRuSSvO~oVHytqM64kfz~gxzjMsgXcfCew__')]  bg-center bg-cover bg-no-repeat w-full h-screen  relative flex  md:flex-col flex-row justify-center items-center bg-gray-900/50">
+        <div
+        className="relative w-full h-screen bg-cover bg-no-repeat bg-center flex flex-col md:flex-row justify-center items-center bg-gray-900/50 "
+        style={{
+      
+            backgroundImage: `url(${bannerImage})`,
+            backgroundSize: "cover"
+        }}
+    >
             <div className="absolute inset-0 bg-gray-900/50 pointer-events-none"></div>
             <div className="absolute flex flex-col justify-center items-center">
                 <h3
@@ -19,9 +27,7 @@ const Banner = (employees) => {
                     Videoberatung Deutschlandweit
                 </h3>
                 <div>
-                    <h2
-                        className={`${styles.title}  text-center text-white font-extrabold text-4xl sm:leading-[67px] tracking-tight  sm:text-6xl leading-none sm:tracking-tighter mb-3 sm:mb-6`}
-                    >
+                <h2 className={`${styles.title} lg:whitespace-nowrap whitespace-normal text-center text-white font-extrabold text-4xl sm:leading-[67px] tracking-tight sm:text-6xl leading-none sm:tracking-tighter  mb-3 sm:mb-6`}>
                         Buchen Sie jetzt einen
                         <br />
                         <span className="flex justify-center items-center mt-2">
@@ -35,12 +41,11 @@ const Banner = (employees) => {
                     sofort überprüfen Sie Ihre Gesundheit für Sie
                 </p> */}
 
-                <div className="mt-10 flex flex-col md:flex-row gap-4">
+                {/* <div className="mt-10 flex flex-col md:flex-row gap-4">
                     <Link
                         href={route("doctor.doctorList", { tab: "tab1" })}
                         className="flex items-center gap-2 bg-[#ca9b31] hover:bg-[#f9f8f2] border-2 border-[#ca9b31] hover:text-[#ca9b31]  text-white font-medium text-lg px-4 py-3 rounded-xl shadow-md   transition duration-150 ease-in-out"
                     >
-                        {/* <img src={buildingsIcon} alt="" /> */}
                         <TbBuildingBank />
                         Vor-Ort-Termin
                     </Link>
@@ -51,7 +56,7 @@ const Banner = (employees) => {
                         <IoVideocamOutline />
                         Videosprechstunde
                     </Link>
-                </div>
+                </div> */}
 
                 <SelectBox employees={employees} />
             </div>

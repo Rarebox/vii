@@ -33,6 +33,12 @@ class SiteController extends Controller
         return response()->json($employees);
     }
 
+    public function get_patients()
+    {
+        $patients = Database::getWhere2('users', 'user_type', 'patient');
+        return response()->json($patients);
+    }
+
 
     // public function doctorList()
     // {

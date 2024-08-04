@@ -11,6 +11,8 @@ import profilePhoto from "@/Assets/Profile/profileInfo/profile.png";
 import { IoMdClose } from "react-icons/io";
 import styles from "./style.module.css";
 
+import Notifications from "@/Components/Notifications";
+
 
 const Navbar = ({ user }) => {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -34,6 +36,12 @@ const Navbar = ({ user }) => {
                             >
                                 Dashboard
                             </Link>
+
+                            {/* notifications dropdown */}
+
+                            <Notifications notifications={user.notifications} />
+
+
                             <Dropdown>
                                 <Dropdown.Trigger>
                                     <div className="w-12 h-12 cursor-pointer">
@@ -76,7 +84,7 @@ const Navbar = ({ user }) => {
                                 <img src={avatar} alt="" />
                                 Anmelden
                             </Link>
-                   
+
                         </>
                     )}
                 </div>

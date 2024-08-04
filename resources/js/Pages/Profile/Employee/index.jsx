@@ -10,6 +10,9 @@ import AccountSettings from "@/Components/Profile/Emplyee/AccountSettings";
 import { useNavigate, useParams } from "react-router-dom";
 import VisitDetails from "@/Components/Profile/Emplyee/VisitDetails";
 
+import RserveForPatient from "@/Components/Profile/Emplyee/ReserveForPatient";
+import BlockDatesHours from "@/Components/Profile/Emplyee/BlockDatesHours";
+
 
 
 const Profile = ({auth, reservations}) => {
@@ -29,6 +32,18 @@ const Profile = ({auth, reservations}) => {
           label: "Account Einstellungen",
           component: <AccountSettings auth={auth} />,
         },
+        // reserve for patient
+        {
+            id: "reserve_patient",
+            label: "Reservierungen",
+            component: <RserveForPatient auth={auth} />,
+        },
+        // block dates and hours
+        {
+            id: "block_hours",
+            label: "Blockierte Termine",
+            component: <BlockDatesHours auth={auth} />,
+        }
       ];
     console.log(reservations)
 //   const navigate = useNavigate();

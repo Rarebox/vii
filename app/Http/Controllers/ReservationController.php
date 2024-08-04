@@ -29,18 +29,26 @@ class ReservationController extends Controller
         // validate request
         $request->validate([
             'employeeUID' => 'required',
-            'date' => 'required',
-            'hour' => 'required',
+            // 'date' => 'required',
+            // 'hour' => 'required',
+            'time' => 'required',
         ]);
-        // dd($request->all());
+        // $time = 2024-07-21 08:15
+
+        $date = date('Y-m-d', strtotime($request->time));
+        $hour = date('H:i', strtotime($request->time));
         $reservation = array(
             'employee_uid' => $request->employeeUID,
-            'date' => $request->date,
-            'hour' => $request->hour,
+            'date' => $date,
+            'hour' => $hour,
             'is_online' => $request->online
         );
         $request->session()->put('reservation', $reservation);
-        $check = $this->reservation_exists($request->session()->get('reservation'), $request->employeeUID);
+        if (!$request->online) {
+            $check = $this->onsite_reservation_exists($request->session()->get('reservation'), $request->employeeUID);
+        } else {
+            $check = $this->reservation_exists($request->session()->get('reservation'), $request->employeeUID);
+        }
         if ($check) {
             $request->session()->forget('reservation');
             return Redirect::back()->with('error', 'Reservation already exists for the selected date and time');
@@ -54,6 +62,7 @@ class ReservationController extends Controller
 
     public function create(Request $request)
     {
+        // dd($request->session()->get('reservation'));
         if (!$request->session()->has('reservation')) {
             return Redirect::route('site.index');
         }
@@ -63,6 +72,7 @@ class ReservationController extends Controller
         //     return Redirect::back()->with('error', 'Reservation already exists for the selected date and time');
         // }
         $reservation_session = $request->session()->get('reservation');
+        // dd($reservation_session);
         // $employee = Auth::getUserData($reservation_session['employee_uid']);
         if (is_array($reservation_session) && isset($reservation_session['employee_uid'])) {
             $employee = Auth::getUserData($reservation_session['employee_uid']);
@@ -84,7 +94,6 @@ class ReservationController extends Controller
     {
         $request->validate([
             'insurance_type' => 'required',
-            'insurance_policy_number' => 'required',
             'is_online' => 'required',
             'employee_uid' => 'required',
             'date' => 'required',
@@ -114,7 +123,7 @@ class ReservationController extends Controller
                 'status' => 'pending'
             ];
             $reservation = Database::push('reservations', $reservation);
-            $request->session()->forget('reservation');
+            // $request->session()->forget('reservation');
 
             // $reservation = Database::getOneReference('reservations/'.$reservation->getKey());
             $reservation_key = $reservation->getKey();
@@ -127,9 +136,27 @@ class ReservationController extends Controller
 
             // dd($reservation, $employee, $patient);
 
-            Mail::to($employee['email'])->send(new ReservationBookedEmployee($reservation, $employee, $patient));
+            // Mail::to($employee['email'])->send(new ReservationBookedEmployee($reservation, $employee, $patient));
 
-            Mail::to(Auth::getUserData()['email'])->send(new ReservationBookedPatient($reservation, $patient, $employee));
+            // Mail::to(Auth::getUserData()['email'])->send(new ReservationBookedPatient($reservation, $patient, $employee));
+
+            Mail::send('mail.resbooked_employee', [
+                'reservation' => $reservation,
+                'employee' => $employee,
+                'patient' => $patient
+            ], function ($message) use ($employee, $patient) {
+                $message->to($employee['email'], $employee['name'])->subject('Neue Pflegeberatung gebucht - Details zur Überprüfung');
+                
+            });
+
+            Mail::send('mail.resbooked_patient', [
+                'reservation' => $reservation,
+                'employee' => $employee,
+                'patient' => $patient
+            ], function ($message) use ($employee, $patient) {
+                
+                $message->to($patient['email'], $patient['name'])->subject('Bestätigung Ihres Termins zur Pflegeberatung');
+            });
 
             // dd('alsdkjflsd');
             // dd($reservation);
@@ -179,16 +206,67 @@ class ReservationController extends Controller
         // ];
     }
 
-    public function reservation_exists($reservation, $uid)
+    public function reservation_exists($reservation = [], $uid) {
+        $blocked_hours = $this->database->getReference('/users/'.$reservation['employee_uid'].'/blocked_hours/'.$reservation['date'])->getValue();
+        // dd($blocked_hours);
+        if (is_array($blocked_hours)) {
+            if (in_array($reservation['hour'], $blocked_hours)) {
+                return true;
+            }
+            switch (date('i', strtotime($reservation['hour']))) {
+                case '15':
+                    if (in_array(date('H:i', strtotime($reservation['hour'] . ' -15 minutes')), $blocked_hours)) {
+                        return true;
+                    }
+                    break;
+                case '30':
+                    if (in_array(date('H:i', strtotime($reservation['hour'] . ' -30 minutes')), $blocked_hours)) {
+                        return true;
+                    }
+                    break;
+                case '45':
+                    if (in_array(date('H:i', strtotime($reservation['hour'] . ' -45 minutes')), $blocked_hours)) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+        return false;
+    }
+
+    public function onsite_reservation_exists($reservation, $uid)
     {
-        // dd($reservation['employee_uid']);
         $uid = $reservation['employee_uid'];
+
+        $blocked_hours = Database::get('users/'.$uid.'/blocked_hours/'.$reservation['date']);
+
+
+        if (is_array($blocked_hours)) {
+            if ($min = date('i', strtotime($reservation['hour'])) == '30') {
+                if (in_array(date('H:i', strtotime($reservation['hour'] . ' -30 minutes')), $blocked_hours)) {
+                    return true;
+                }
+            }
+        }
+
         $reservations = Database::getWhere('reservations', 'employee_uid', $uid);
-        $reservations = array_filter($reservations, function($res) use ($reservation) {
-            return $res['date'] == $reservation['date'] && $res['hour'] == $reservation['hour'];
-        });
-        if (!empty($reservations)) {
-            return true;
+
+        foreach ($reservations as $res) {
+            if ($res['date'] == $reservation['date'] && $res['hour'] == $reservation['hour']) {
+                return true;
+            }
+            if ($min = date('i', strtotime($reservation['hour'])) == '30') {
+                $hour = date('H:i', strtotime($reservation['hour'] . ' -30 minutes'));
+                if ($res['date'] == $reservation['date'] && $res['hour'] == $hour && $res['is_online']) {
+                    return true;
+                }
+            }
+            // else {
+            //     $hour = date('H:i', strtotime($reservation['hour'] . ' +30 minutes'));
+            //     if ($res['date'] == $reservation['date'] && $res['hour'] == $hour) {
+            //         return true;
+            //     }
+            // }
         }
     }
 
@@ -243,21 +321,50 @@ class ReservationController extends Controller
     public function get_hours(Request $request)
     {
         $date = $request->date;
-        $online = $request->online;
+        $type = $request->type;
         $employee_uid = $request->employeeUID;
 
         $hours = [];
         $hour = '08:00';
         $end_hour = '15:00';
-        $reservations = Database::getWhere('reservations', 'employee_uid', $employee_uid);
+        // $reservations = Database::getWhere('reservations', 'employee_uid', $employee_uid);
         while (strtotime($hour) <= strtotime($end_hour)) {
-            foreach ($reservations as $reservation) {
-                if (($reservation['date'] == $date && $reservation['hour'] == $hour) || (strtotime($date . ' ' . $hour) < time())) {
-                    break;
+            // foreach ($reservations as $reservation) {
+            //     if (($reservation['date'] == $date && $reservation['hour'] == $hour) || (strtotime($date . ' ' . $hour) < time())) {
+            //         break;
+            //     }
+            // }
+            // $hours[] = $hour;
+            // $hour = date('H:i', strtotime($hour . ' +60 minutes'));
+            // if ($type == 'onsite') {
+            //     $hour = date('H:i', strtotime($hour . ' +30 minutes'));
+            // } else {
+            //     $hour = date('H:i', strtotime($hour . ' +60 minutes'));
+            // }
+
+            if ($type == 'onsite') {
+                $check = $this->onsite_reservation_exists(array(
+                    'employee_uid' => $employee_uid,
+                    'date' => $date,
+                    'hour' => $hour
+                ), $employee_uid);
+                if (!$check) {
+                    $hours[] = $hour;
                 }
+                $hour = date('H:i', strtotime($hour . ' +30 minutes'));
+            } else {
+                $check = $this->reservation_exists(array(
+                    'employee_uid' => $employee_uid,
+                    'date' => $date,
+                    'hour' => $hour
+                ), $employee_uid);
+                if (!$check) {
+                    $hours[] = $hour;
+                }
+                $hour = date('H:i', strtotime($hour . ' +60 minutes'));
             }
-            $hours[] = $hour;
-            $hour = date('H:i', strtotime($hour . ' +60 minutes'));
+
+
 
         }
         return response()->json([
@@ -392,11 +499,69 @@ class ReservationController extends Controller
 
             // Mail::to(Auth::getUserData()['email'])->send(new QuickReservationBookedPatient($quick_reservation, $patient, $employee));
 
+            Mail::send('emails.quick_reservation', [
+                'quick_reservation' => $quick_reservation,
+                'employee' => $employee,
+                'patient' => $patient
+            ], function ($message) use ($employee, $patient) {
+                $message->to($employee['email'], $employee['name'])->subject('Quick Reservation Booked');
+                $message->to($patient['email'], $patient['name'])->subject('Quick Reservation Booked');
+            });
+
         } catch (\Exception $e) {
             return Redirect::back()->with('error', 'Error occured while booking reservation');
         }
 
         return Redirect::back()->with('success', 'Quick Reservation booked successfully');
+    }
+
+
+    public function reserveforpatient(Request $request)
+    {
+
+        // dd($request->all());
+
+        $request->validate([
+            'patientUID' => 'required',
+            // 'date' => 'required',
+            // 'hour' => 'required',
+            'time' => 'required',
+            'insurance_type' => 'required',
+            'insurance_policy_number' => 'required',
+            'online' => 'required',
+        ]);
+
+        $date = date('Y-m-d', strtotime($request->time));
+        $hour = date('H:i', strtotime($request->time));
+
+        $reservation = array(
+            'employee_uid' => Auth::getUID(),
+            'user_uid' => $request->patientUID,
+            'date' => $date,
+            'hour' => $hour,
+            'insurance_type' => $request->insurance_type,
+            'insurance_policy_number' => $request->insurance_policy_number,
+            'is_online' => $request->online,
+        );
+
+        $check = $this->reservation_exists($reservation, Auth::getUID());
+
+        // dd($check);
+
+        if ($check) {
+            return Redirect::back()->with('error', 'Reservation already exists for the selected date and time');
+        }
+
+        $reservation = Database::push('reservations', $reservation);
+
+        $employee = Auth::getUserData();
+        $patient = Auth::getUserData($request->patientUID);
+
+        // Mail::to($employee['email'])->send(new ReservationBookedEmployee($reservation, $employee, $patient));
+
+        // Mail::to($patient['email'])->send(new ReservationBookedPatient($reservation, $patient, $employee));
+
+        return Redirect::back()->with('success', 'Reservation booked successfully');
     }
 
 

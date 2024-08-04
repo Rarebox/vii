@@ -10,6 +10,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\BookingController;
 
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
@@ -26,18 +27,27 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['firebase', 'firebaseVerified'])->name('dashboard');
 
-Route::get('/employees', function () {
-    return Inertia::render('DoctorList/index'); 
-});
-
 Route::get('/reservation', function () {
-    return Inertia::render('Reservation/CreateNew/index'); 
+    return Inertia::render('Reservation/CreateNew/index');
 });
 
-Route::get('/employees/{tab}', [DoctorController::class, 'doctorList'])->name('doctor.doctorList');
-Route::get('/employees/{uid}', [DoctorController::class, 'show'])->name('doctor.show');
+// Route::get('/employees/{tab}', [DoctorController::class, 'doctorList'])->name('doctor.doctorList');
+// Route::get('/employees/{uid}', [DoctorController::class, 'show'])->name('doctor.show');
 
 
+// Route::get('/employees', function () {
+//     return Inertia::render('DoctorList/index');
+// });
+
+Route::get('/Reservierung', function () {
+    return Inertia::render('Booking'); // Booking.jsx dosyasını çağıracak
+});
+
+Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
+
+
+Route::get('/employee/get_days/{uid}/{type}', [EmployeeController::class, 'get_days'])->name('employee.get_days');
+Route::get('/employee/get_blocked_hours/{uid}', [EmployeeController::class, 'get_blocked_hours'])->name('employee.get_blocked_hours');
 
 Route::get('/employee/{uid}', [EmployeeController::class, 'show'])->name('employee.show');
 Route::post('/reservation/check/', [ReservationController::class, 'check'])->name('reservation.check');
@@ -49,10 +59,10 @@ Route::post('/reservation/quick/', [ReservationController::class, 'quick'])->nam
 // Route::middleware('auth')->group(function () {
 Route::middleware(['firebase', 'firebaseVerified'])->group(function () {
 
-    Route::middleware('employee')->group(function () {
+    // Route::middleware('employee')->group(function () {
         Route::get('/reservation/accept/{key}', [ReservationController::class, 'accept'])->name('reservation.accept');
         Route::get('/reservation/decline/{key}', [ReservationController::class, 'decline'])->name('reservation.decline');
-    });
+    // });
 
     // Route::post('/cancel/{key}', [ReservationController::class, 'cancel'])->name('reservation.cancel');
     Route::post('/cancel-reservation', [ReservationController::class, 'cancel'])->name('reservation.cancel');
@@ -76,7 +86,7 @@ Route::middleware(['firebase', 'firebaseVerified'])->group(function () {
     Route::get('/quick/{key}', [ProfileController::class, 'quick'])->name('quick');
     Route::post('/quick/accept', [ProfileController::class, 'quick_accept'])->name('quick.accept');
 
-    Route::middleware('patient')->group(function () {
+    // Route::middleware('patient')->group(function () {
         Route::get('/reservation/create', [ReservationController::class, 'create'])->name('reservation.create');
         Route::get('/reservation/session', function( Request $request) {
             return $request->session()->get('reservation');
@@ -85,15 +95,25 @@ Route::middleware(['firebase', 'firebaseVerified'])->group(function () {
 
 
         Route::post('/reservation/quick/store', [ReservationController::class, 'quick_store'])->name('reservation.quick_store');
-    });
+    // });
 
 
 
 
     Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
+
+
+    // reserveforpatien
+    Route::post('/reserveforpatient', [ReservationController::class, 'reserveforpatient'])->name('reserveforpatient');
+
+    Route::post('/profile/blockhours', [ProfileController::class, 'blockhours'])->name('blockhours');
+
+    Route::get('/getblockhours', [ProfileController::class, 'getblockhours'])->name('getblockhours');
 });
 
 Route::get('/get_employees', [SiteController::class, 'get_employees'])->name('get_employees');
+Route::get('/get_patients', [SiteController::class, 'get_patients'])->name('get_patients');
+Route::get('/available_dates/{employee_uid}', [EmployeeController::class, 'available_dates'])->name('available_dates');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';

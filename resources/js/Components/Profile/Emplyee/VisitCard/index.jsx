@@ -6,6 +6,8 @@ import videoIcon from "@/Assets/Profile/visit/videoIcon.svg";
 import editIcon from "@/Assets/Profile/visit/editIcon.svg";
 import calendarIcon from "@/Assets/Profile/visit/calendarIcon.svg";
 import { Link } from '@inertiajs/react';
+import { FaRegCalendarAlt } from "react-icons/fa";
+
 
 const VisitCard = ({
   visitType,
@@ -35,7 +37,7 @@ const VisitCard = ({
       </div>
       <div className={styles.btnGroup}>
         <Link className={styles.btn} href={route('visit', visitId)}>
-          <img src={calendarIcon} alt="" />
+        <FaRegCalendarAlt />
           Termindetails
         </Link>
         {/* <button className={styles.btn}>

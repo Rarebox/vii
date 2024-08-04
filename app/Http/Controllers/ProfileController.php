@@ -46,6 +46,7 @@ class ProfileController extends Controller
             ]);
         } else if ($reservation['user_uid'] == $loggedInUser) {
             $reservation['employee'] = Auth::getUserData($reservation['employee_uid']);
+            // dd($reservation);
             return Inertia::render('Profile/Patient/Visit/index', [
                 'reservation' => $reservation
             ]);
@@ -282,6 +283,30 @@ class ProfileController extends Controller
 
         Mail::to($patient['email'])->send(new ReservationBookedPatient($reservation->getValue(), $patient, $employee));
 
+
+        return Redirect::route('profile.index');
+
+    }
+
+
+    public function getblockhours(Request $request)
+    {
+        // $uid = Auth::getUID();
+        $blocked_hours = Auth::getBlockedHours() ?? [];
+        return response()->json($blocked_hours);
+    }
+
+    public function blockhours(Request $request)
+    {
+        // valide the request
+        $request->validate([
+            // 'date' => 'required',
+            // 'hours' => 'required'
+            'times' => 'required'
+        ]);
+        $blocked_hours = $request->times;
+
+        Database::set('users/' . Auth::getUID() . '/blocked_hours', $blocked_hours);
 
         return Redirect::route('profile.index');
 

@@ -109,17 +109,27 @@ class FirebaseDatabase
         $users = $this->database->getReference('users')->getValue();
         $users = array_map(function ($user_data, $uid) {
             $user = Auth::getUser($uid);
-            $user_data['uid'] = $uid;
-            $user_data['email'] = $user->email;
-            $user_data['email_verified'] = $user->emailVerified;
-
-            $user_data['name'] = $user->displayName;
-
+    
+            if ($user === null) {
+                $user_data['uid'] = $uid;
+                $user_data['email'] = 'Unknown';
+                $user_data['email_verified'] = false;
+                $user_data['name'] = 'Unknown';
+            } else {
+                $user_data['uid'] = $uid;
+                $user_data['email'] = $user->email;
+                $user_data['email_verified'] = $user->emailVerified;
+                $user_data['name'] = $user->displayName;
+            }
+    
             return $user_data;
-
+    
         }, $users, array_keys($users));
-        // dd($users);
         return $users;
+    }
+
+    public function get($path) {
+        return $this->database->getReference($path)->getValue();
     }
 
 

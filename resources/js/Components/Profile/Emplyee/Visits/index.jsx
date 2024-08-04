@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./style.module.css";
 import VisitCard from "../VisitCard";
+import { formatDate } from "../../../utils/utils";
 
 const initialVisits = [
   {
@@ -69,9 +70,9 @@ const Visits = ({reservations}) => {
         {reservations.map((reservation) => (
           <VisitCard
             key={reservation.key}
-            visitType={reservation.is_online?'Videosprechstunde Termin':'Vor-Ort-Termin'}
-            patientName={reservation.patient.name}
-            date={reservation.date}
+            visitType={reservation.is_online ? 'Videosprechstunde Termin' : 'Vor-Ort-Termin'}
+            patientName={`${reservation.patient.username} ${reservation.patient.name}`}
+            date={formatDate(reservation.date, 'd.m.Y')} // Tarih formatını d.m.Y olarak değiştir
             time={reservation.hour}
             visitId={reservation.key}
             profile_image={reservation.patient.profile_image ? reservation.patient.profile_image : ''}

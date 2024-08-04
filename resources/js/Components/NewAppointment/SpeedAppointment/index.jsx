@@ -17,6 +17,7 @@ import QuickAppointmentRequest from "@/Components/NewAppointment/QuickAppointmen
 import { Head, Link, useForm } from '@inertiajs/react';
 
 
+
 // const deDays = [
 //   "Sonntag",
 //   "Montag",
@@ -29,9 +30,13 @@ import { Head, Link, useForm } from '@inertiajs/react';
 const deToday = "Heute";
 const deTomorrow = "Morgen";
 
-const SpeedAppointment = ({dates, employeeUID, quickDate, quickHour}) => {
+const SpeedAppointment = ({dates, employeeUID, quickDate, quickHour, type}) => {
+
+    //
     const [hours, setHours] = useState([]);
-    const [activeTab, setActiveTab] = useState("online");
+    console.log(type)
+    const [activeTab, setActiveTab] = useState(type === "onsite" ? "onsite" : "online");
+    console.log(activeTab)
 
 
     const { data, setData, post, get, processing, errors, reset } = useForm({
@@ -42,10 +47,14 @@ const SpeedAppointment = ({dates, employeeUID, quickDate, quickHour}) => {
     });
 
 
-    const selectDate = (date) => {
-        axios.get('/reservation/get_hours?date='+date+'&employeeUID='+employeeUID, {
+    const selectDate = (date, tab="") => {
+        if (tab === "") {
+            tab = activeTab;
+        }
+        axios.get('/reservation/get_hours?date='+date+'&employeeUID='+employeeUID+'&type='+tab, {
             date: date,
             employeeUID: employeeUID,
+            type: tab,
         }).then((response) => {
             setData("date", date);
             setHours(response.data.hours);
@@ -60,6 +69,7 @@ const SpeedAppointment = ({dates, employeeUID, quickDate, quickHour}) => {
 
     const setSelectedHour = (event) => {
         const hour = event.target.getAttribute("data-hour");
+        console.log(hour);
         setData("hour", hour);
         const timeBoxes = document.querySelectorAll(`.${styles.timeBox}`);
         timeBoxes.forEach((timeBox) => {
@@ -69,7 +79,10 @@ const SpeedAppointment = ({dates, employeeUID, quickDate, quickHour}) => {
     }
 
     const handleActivaTab = (tab) => {
+        console.log(tab);
         setActiveTab(tab);
+        // get_hours again
+        selectDate(data.date, tab);
         setData("online", tab === "online" ? 1 : 0);
     }
 
@@ -112,7 +125,7 @@ const SpeedAppointment = ({dates, employeeUID, quickDate, quickHour}) => {
     <div className={styles.container}>
 
 <QuickAppointmentRequest employeeUID={employeeUID} quickDate={quickDate} quickHour={quickHour} />
-      
+
 
       <div
         className={styles.tabMenu}
@@ -151,7 +164,7 @@ const SpeedAppointment = ({dates, employeeUID, quickDate, quickHour}) => {
                 <div className={styles.dateBoxContainer}>
                     {dates.map((date, index) => {
                         return (
-                            <div className={styles.dateBox} key={index} onClick={() => selectDate(date.date)} data-date={date.date}>
+                            <div className={styles.dateBox} key={index} onClick={() => selectDate(date.date, activeTab)} data-date={date.date}>
                                 <h6 className={   styles.dateBoxTitle   }>{date.day}</h6>
                                 <p className={styles.dateBoxDayInfo}>{date.weekday}</p>
                             </div>

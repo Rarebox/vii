@@ -33,6 +33,10 @@ class HandleInertiaRequests extends Middleware
     {
         $user_data = Auth::check() ? Auth::getUserData() : null;
 
+        if ($user_data) {
+            $user_data['notifications'] = Auth::getNotifications();
+        }
+
 
         // $uid = $_COOKIE['uid'];
         // dd($uid);

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./style.module.css";
 import VisitCard from "../VisitCard";
+import { formatDate } from "../../../utils/utils";
 
 const initialVisits = [
   {
@@ -65,20 +66,19 @@ const Visits = ({reservations}) => {
 
   return (
     <div className={`${styles.container} flex flex-col w-full gap-4 p-4 md:p-0 `}>
-
-      <h5 className={styles.title}>Abgeschlossene Besuche </h5>
-      <div className={styles.visitContainer}>
-        {visits.map((reservation) => (
-          <VisitCard
-            key={reservation.key}
-            visitType={reservation.is_online?'Videosprechstunde Termin':'Vor-Ort-Termin'}
-            doctorName={reservation.employee.name}
-            profession='nurse'
-            date={reservation.date}
-            time={reservation.hour}
-            visitId={reservation.key}
-            profile_image={reservation.employee.profile_image ? reservation.employee.profile_image : ''}
-          />
+            <h5 className={styles.title}>Abgeschlossene Besuche</h5>
+            <div className={styles.visitContainer}>
+                {visits.map((reservation) => (
+                    <VisitCard
+                        key={reservation.key}
+                        visitType={reservation.is_online ? 'Videosprechstunde Termin' : 'Vor-Ort-Termin'}
+                        doctorName={`${reservation.employee.username} ${reservation.employee.name}`}
+                        profession='nurse'
+                        date={formatDate(reservation.date)} // Tarih formatını değiştirin
+                        time={reservation.hour}
+                        visitId={reservation.key}
+                        profile_image={reservation.employee.profile_image ? reservation.employee.profile_image : ''}
+                    />
         ))}
         {/* <button className={styles.showMoreBtn} onClick={loadMore}>
           Zeige alles

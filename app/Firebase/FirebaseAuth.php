@@ -368,5 +368,95 @@ class FirebaseAuth
             return null;
         }
     }
+
+
+
+    public function getNotifications() {
+        $user = $this->getUserData();
+        if ($user['user_type'] == 'employee') {
+            $notifications = Database::getWhere('reservations', 'employee_uid', $user['uid']);
+
+            // $notifications = array_filter($notifications, function ($notification) {
+            //     $date = date('Y-m-d', strtotime($notification['date']));
+            //     $time = date('H:i', strtotime($notification['hour']));
+            //     $current_date = date('Y-m-d');
+            //     $current_time = date('H:i');
+            //     if ($date == $current_date && $time > $current_time) {
+            //         return true;
+            //     } else {
+            //         return false;
+            //     }
+            // });
+            // use array map instead to add patient data to each notification without adding null values
+            // $notifications = array_map(function ($notification) {
+            //     $date = date('Y-m-d', strtotime($notification['date']));
+            //     $time = date('H:i', strtotime($notification['hour']));
+            //     $current_date = date('Y-m-d');
+            //     $current_time = date('H:i');
+            //     if ($date == $current_date && $time > $current_time) {
+            //         $patient = $this->getUserData($notification['user_uid']);
+            //         $notification['patient'] = $patient;
+            //         return $notification;
+            //     }
+            // }, $notifications);
+
+            $userNotifcation = [];
+            foreach ($notifications as $notification) {
+
+
+                // $notification['date'] = strtotime($notification['date']);
+
+                $notification['date'] = date('Y-m-d', strtotime($notification['date']));
+
+                // $notification['hour'] = strtotime($notification['hour']);
+
+                $notification['hour'] = date('H:i', strtotime($notification['hour']));
+                $notification['datetime'] = strtotime($notification['date'] . ' ' . $notification['hour']);
+                if ($notification['datetime'] > time() && $notification['datetime'] < time() + 86400) {
+                    $patient = $this->getUserData($notification['user_uid']);
+                    $notification['with'] = $patient;
+                    $notification['message'] = 'You have an appointment with ' . $patient['username'] . ' ' . $patient['name'] . ' on ' . $notification['date'] . ' at ' . $notification['hour'];
+                    $userNotifcation[] = $notification;
+                }
+            }
+
+        } else {
+            $notifications = Database::getWhere('reservations', 'user_uid', $user['uid']);
+
+            $userNotifcation = [];
+            foreach ($notifications as $notification) {
+
+                // $notification['date'] = strtotime($notification['date']);
+
+                $notification['date'] = date('Y-m-d', strtotime($notification['date']));
+
+                // $notification['hour'] = strtotime($notification['hour']);
+
+                $notification['hour'] = date('H:i', strtotime($notification['hour']));
+                $notification['datetime'] = strtotime($notification['date'] . ' ' . $notification['hour']);
+
+                if ($notification['datetime'] > time() && $notification['datetime'] < time() + 86400) {
+                    $employee = $this->getUserData($notification['employee_uid']);
+                    $notification['with'] = $employee;
+                    $notification['message'] = 'You have an appointment with Dr.' .  $employee['username'] . ' ' . $employee['name'] . ' on ' . $notification['date'] . ' at ' . $notification['hour'];
+                    $userNotifcation[] = $notification;
+                }
+            }
+        }
+
+        // date 2024-07-16 and time 10:00
+
+
+        // dd($userNotifcation);
+
+        return $userNotifcation;
+    }
+
+    public function getBlockedHours($date=null) {
+        if ($date == null) {
+            return $this->database->getReference('users/' . $this->getUID() . '/blocked_hours')->getValue();
+        }
+        return $this->database->getReference('users/' . $this->getUID() . '/blocked_hours/' . $date)->getValue();
+    }
 }
 
